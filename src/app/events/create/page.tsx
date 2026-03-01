@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { createLocalEvent } from '@/lib/local-db';
 import type { EventType } from '@/types';
+import { isOrganizerApproved } from '@/lib/access';
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -43,6 +44,7 @@ export default function CreateEventPage() {
     college: '',
     department: '',
   });
+  const organizerApproved = isOrganizerApproved(profile);
 
   useEffect(() => {
     if (coords) {
@@ -94,7 +96,7 @@ export default function CreateEventPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !organizerApproved) return;
 
     setLoading(true);
     try {
@@ -135,6 +137,34 @@ export default function CreateEventPage() {
   }
 
   if (!user) return null;
+
+  if (!organizerApproved) {
+    return (
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        <Card className="glass-effect">
+          <CardHeader>
+            <CardTitle className="text-2xl">Organizer Verification Required</CardTitle>
+            <CardDescription>
+              Only approved organizers can create events. Submit your verification documents to continue.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Current status: <span className="font-semibold text-foreground capitalize">{profile?.organizerStatus || 'none'}</span>
+            </p>
+            <div className="flex gap-3">
+              <Button asChild>
+                <Link href="/organizer/apply">Apply as Organizer</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/">Back to Home</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">

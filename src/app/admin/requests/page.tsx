@@ -20,7 +20,7 @@ export default function AdminRequestsPage() {
     const router = useRouter();
 
     useEffect(() => {
-        if (!authLoading && (!user || profile?.role !== 'organizer')) {
+        if (!authLoading && (!user || profile?.role !== 'admin')) {
             router.push('/');
         }
     }, [user, profile, authLoading, router]);
@@ -48,7 +48,7 @@ export default function AdminRequestsPage() {
     };
 
     useEffect(() => {
-        if (user && profile?.role === 'organizer') {
+        if (user && profile?.role === 'admin') {
             fetchRequests();
         }
     }, [user, profile]);

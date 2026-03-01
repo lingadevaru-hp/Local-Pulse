@@ -3,14 +3,46 @@
 import { SignedIn, SignedOut, SignInButton, UserProfile } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import AppFooter from '@/components/AppFooter';
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { isOrganizerApproved } from '@/lib/access';
 
 export default function ProfilePage() {
+    const { profile } = useAuth();
+    const organizerApproved = isOrganizerApproved(profile);
+
     return (
         <div className="flex flex-col min-h-screen">
             <main className="flex-grow container mx-auto px-4 py-10">
                 <SignedIn>
                     <div className="max-w-5xl mx-auto">
                         <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
+                        <Card className="mb-6">
+                            <CardHeader>
+                                <CardTitle className="text-lg">Organizer Access</CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex items-center justify-between gap-4 flex-wrap">
+                                <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground">
+                                        Organizer status controls event creation and hosting access.
+                                    </p>
+                                    <Badge variant={organizerApproved ? 'default' : 'outline'} className="capitalize">
+                                        {profile?.organizerStatus || 'none'}
+                                    </Badge>
+                                </div>
+                                {organizerApproved ? (
+                                    <Button asChild>
+                                        <Link href="/organizer">Open Organizer Dashboard</Link>
+                                    </Button>
+                                ) : (
+                                    <Button asChild>
+                                        <Link href="/organizer/apply">Apply As Organizer</Link>
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
                         <div className="rounded-2xl border border-border/50 bg-card p-2 shadow-sm overflow-hidden">
                             <UserProfile
                                 path="/profile"

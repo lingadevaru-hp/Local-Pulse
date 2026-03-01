@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Calendar, ExternalLink, Ticket as TicketIcon, Bell, BellOff } from 'lucide-react';
+import { Calendar, Download, ExternalLink, Ticket as TicketIcon, Bell, BellOff, MapPin } from 'lucide-react';
 import Ticket from './Ticket';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -16,6 +16,7 @@ import {
     LOCAL_REGISTRATIONS_UPDATED_EVENT,
     LocalRegistration,
 } from '@/lib/local-db';
+import { downloadTicketPdf } from '@/lib/ticket-pdf';
 
 export default function BookingHistory() {
     const [bookings, setBookings] = useState<LocalRegistration[]>([]);
@@ -56,6 +57,21 @@ export default function BookingHistory() {
         });
     };
 
+    const downloadTicket = (booking: LocalRegistration) => {
+        downloadTicketPdf({
+            bookingId: booking.bookingId,
+            eventName: booking.eventName,
+            eventDate: booking.eventDate,
+            eventLocation: booking.eventLocation,
+            fullName: booking.fullName,
+            email: booking.email,
+            phone: booking.phone,
+            attendees: booking.attendees,
+            amount: booking.amount,
+            bookedAt: booking.registeredAt,
+        });
+    };
+
     const hasBookings = useMemo(() => bookings.length > 0, [bookings]);
 
     if (!hasBookings) {
@@ -78,8 +94,17 @@ export default function BookingHistory() {
                                 <CardTitle className="text-xl">{booking.eventName}</CardTitle>
                                 <CardDescription className="flex items-center mt-1">
                                     <Calendar className="w-3 h-3 mr-1" />
-                                    {new Date(booking.registeredAt).toLocaleDateString()}
+                                    Booked on {new Date(booking.registeredAt).toLocaleDateString()}
                                 </CardDescription>
+                                <div className="mt-2 space-y-1">
+                                    <p className="text-xs text-muted-foreground">
+                                        Event date: {booking.eventDate ? new Date(booking.eventDate).toLocaleDateString() : 'TBD'}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground flex items-center">
+                                        <MapPin className="w-3 h-3 mr-1" />
+                                        {booking.eventLocation || 'Venue to be announced'}
+                                    </p>
+                                </div>
                             </div>
                             <Badge variant={booking.status === 'completed' || !booking.status ? 'default' : 'secondary'}>
                                 {booking.status === 'completed' || !booking.status ? 'Confirmed' : booking.status}
@@ -116,6 +141,9 @@ export default function BookingHistory() {
                                 </div>
                                 <Button variant="outline" size="sm" onClick={() => viewTicket(booking)} className="flex-1 sm:flex-none">
                                     <TicketIcon className="w-4 h-4 mr-2" /> View Ticket
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => downloadTicket(booking)} className="flex-1 sm:flex-none">
+                                    <Download className="w-4 h-4 mr-2" /> Download PDF
                                 </Button>
                                 <Button variant="ghost" size="sm" onClick={() => window.location.href = `/events/${booking.eventId}`} className="flex-1 sm:flex-none">
                                     <ExternalLink className="w-4 h-4 mr-2" /> Event Page

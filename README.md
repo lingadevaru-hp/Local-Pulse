@@ -12,8 +12,10 @@ Local Pulse is a Next.js App Router event platform with Clerk authentication, lo
 - Recently viewed events history on the home page.
 - Smart recommendations based on favorites and viewing behavior.
 - Event detail actions: registration, share, contact organizer, map embed, add-to-calendar (`.ics`).
-- Organizer tools to create events and manage organizer event listings.
-- Ticket history page with reminder toggles and digital ticket view.
+- Organizer verification workflow with document upload and pending/approved/rejected states.
+- Organizer tools to create events and manage organizer event listings (approval required).
+- Admin control panel for organizer approvals, rejections, and platform analytics.
+- Ticket history page with reminder toggles, virtual ticket preview, and event-named PDF downloads.
 - Local Data Hub (`/database`) to inspect totals, export backup, import backup, and clear local data.
 - Progressive Web App install prompt, app manifest, service worker, and mobile-friendly icons.
 
@@ -52,6 +54,17 @@ This version includes 5 major feature upgrades:
 - Import backup JSON on another browser/device.
 - Clear all local app data when needed.
 
+6. Organizer Verification + Admin Governance
+- Separate organizer onboarding interface at `/organizer/apply`.
+- Document upload support for legitimacy checks (Aadhaar/PAN/GST/business docs).
+- Admin review dashboard at `/admin` to approve/reject organizer applications.
+- Platform statistics: user count, organizer count, total events, total registrations, events per organizer.
+
+7. Ticket Experience Upgrade
+- Booking confirmation now generates a real downloadable PDF ticket.
+- Ticket filename is event-based (not random), including booking reference.
+- Users can view ticket history and re-download virtual tickets from `/my-tickets`.
+
 ## UI and Navigation Improvements
 
 - Simplified account management with Clerk `UserButton` as the primary profile entry.
@@ -86,6 +99,7 @@ Create `.env.local`:
 ```bash
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 CLERK_SECRET_KEY=YOUR_SECRET_KEY
+NEXT_PUBLIC_ADMIN_EMAILS=contact@lingadevaru.in
 ```
 
 Do not commit real keys. `.env*` is already ignored by `.gitignore`.
@@ -136,6 +150,8 @@ Capabilities:
 - `/my-tickets` - User ticket history
 - `/profile` - Clerk account settings (`UserProfile`)
 - `/organizer` - Organizer dashboard
+- `/organizer/apply` - Organizer verification request form
+- `/admin` - Admin control panel (organizer approvals + analytics)
 - `/database` - Local database tools
 
 ## Progressive Web App

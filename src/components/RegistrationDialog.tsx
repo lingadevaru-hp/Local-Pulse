@@ -20,7 +20,8 @@ import { collection, addDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
 import { isPlaceholderFirebaseConfig } from '@/lib/firebase-config';
 import Image from 'next/image';
-import { saveLocalRegistration } from '@/lib/local-db';
+import { saveLocalRegistration, type LocalRegistration } from '@/lib/local-db';
+import { downloadTicketPdf } from '@/lib/ticket-pdf';
 
 interface RegistrationDialogProps {
     open: boolean;
@@ -67,12 +68,14 @@ export default function RegistrationDialog({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [step, setStep] = useState<'form' | 'scanner' | 'success'>('form');
     const [sendReminders, setSendReminders] = useState(true);
+    const [latestRegistration, setLatestRegistration] = useState<LocalRegistration | null>(null);
 
     const { user } = useAuth();
 
     useEffect(() => {
         if (!open) {
             const timer = setTimeout(() => setStep('form'), 300);
+            setLatestRegistration(null);
             return () => clearTimeout(timer);
         }
     }, [open]);
@@ -97,7 +100,13 @@ export default function RegistrationDialog({
         }
 
         setIsSubmitting(true);
-        const isPaid = eventPrice && eventPrice.toLowerCase() !== 'free' && eventPrice !== '₹0';
+        const normalizedPrice = (eventPrice || '').toLowerCase().trim();
+        const isPaid =
+            normalizedPrice !== '' &&
+            normalizedPrice !== 'free' &&
+            normalizedPrice !== 'inr 0' &&
+            normalizedPrice !== 'rs 0' &&
+            normalizedPrice !== '0';
 
         if (isPaid) {
             setTimeout(() => {
@@ -112,7 +121,7 @@ export default function RegistrationDialog({
     const finalizeRegistration = async () => {
         setIsSubmitting(true);
         const bookingId = 'bk_' + Math.random().toString(36).substr(2, 9);
-        const registration = {
+        const registration: LocalRegistration = {
             bookingId,
             userId: user?.uid,
             eventId,
@@ -135,6 +144,7 @@ export default function RegistrationDialog({
         }
 
         saveLocalRegistration(registration);
+        setLatestRegistration(registration);
 
         setIsSubmitting(false);
         setStep('success');
@@ -148,7 +158,19 @@ export default function RegistrationDialog({
     };
 
     const handleDownloadTicket = () => {
-        alert("Downloading your ticket for " + eventName);
+        if (!latestRegistration) return;
+        downloadTicketPdf({
+            bookingId: latestRegistration.bookingId,
+            eventName: latestRegistration.eventName,
+            eventDate: latestRegistration.eventDate,
+            eventLocation: latestRegistration.eventLocation,
+            fullName: latestRegistration.fullName,
+            email: latestRegistration.email,
+            phone: latestRegistration.phone,
+            attendees: latestRegistration.attendees,
+            amount: latestRegistration.amount,
+            bookedAt: latestRegistration.registeredAt,
+        });
     };
 
     const handleInputChange = (field: keyof FormData, value: string) => {
@@ -203,6 +225,11 @@ export default function RegistrationDialog({
                                 <div className="flex items-center text-sm font-semibold text-muted-foreground">
                                     <MapPin className="w-4 h-4 mr-2 text-primary" /> {eventLocation}
                                 </div>
+                                {latestRegistration?.bookingId ? (
+                                    <div className="text-xs text-muted-foreground font-mono">
+                                        Booking ID: {latestRegistration.bookingId}
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
 
@@ -387,9 +414,9 @@ export default function RegistrationDialog({
                         </Button>
                         <Button type="submit" disabled={isSubmitting} className="flex-grow h-20 text-2xl rounded-[24px] shadow-2xl shadow-primary/30 font-black tracking-tighter uppercase italic">
                             {isSubmitting ? 'WORKING...' : (
-                                !eventPrice || eventPrice.toLowerCase() === 'free' || eventPrice === '₹0'
-                                    ? 'Confirm Now →'
-                                    : `Pay ${eventPrice} & Book →`
+                                !eventPrice || eventPrice.toLowerCase() === 'free' || eventPrice.toLowerCase() === 'inr 0'
+                                    ? 'Confirm Now ->'
+                                    : `Pay ${eventPrice} & Book ->`
                             )}
                         </Button>
                     </div>

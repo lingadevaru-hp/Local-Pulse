@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Download, Calendar, MapPin, User, Ticket as TicketIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { getTicketFileName } from '@/lib/ticket-pdf';
 
 interface TicketProps {
     bookingId: string;
@@ -44,7 +45,7 @@ export default function Ticket({
                 format: [canvas.width / 2, canvas.height / 2],
             });
             pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
-            pdf.save(`Ticket-${eventName.replace(/\s+/g, '-')}.pdf`);
+            pdf.save(getTicketFileName(eventName, bookingId));
         } catch (error) {
             console.error('Error generating PDF:', error);
             alert('Failed to download ticket. Please try again.');

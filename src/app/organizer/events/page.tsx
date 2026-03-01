@@ -11,11 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { getLocalEvents, LOCAL_EVENTS_UPDATED_EVENT } from '@/lib/local-db';
 import type { Event } from '@/types';
+import { isOrganizerApproved } from '@/lib/access';
 
 export default function MyEventsPage() {
-    const { user, loading: authLoading } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const [activeEvents, setActiveEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
+    const organizerApproved = isOrganizerApproved(profile);
 
     useEffect(() => {
         if (authLoading) return;
@@ -43,6 +45,34 @@ export default function MyEventsPage() {
             <div className="flex flex-col min-h-screen">
                 <main className="flex-grow container mx-auto px-4 py-24 flex items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </main>
+                <AppFooter />
+            </div>
+        );
+    }
+
+    if (!organizerApproved) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <main className="flex-grow container mx-auto px-4 py-24 max-w-2xl">
+                    <Card className="glass-effect">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Organizer Approval Required</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <p className="text-sm text-muted-foreground">
+                                You need an approved organizer account to manage organizer events.
+                            </p>
+                            <div className="flex gap-3">
+                                <Button asChild>
+                                    <Link href="/organizer/apply">Apply as Organizer</Link>
+                                </Button>
+                                <Button variant="outline" asChild>
+                                    <Link href="/">Back to Home</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </main>
                 <AppFooter />
             </div>

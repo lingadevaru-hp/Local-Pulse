@@ -6,6 +6,8 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/types";
 import { isPlaceholderFirebaseConfig } from "@/lib/firebase-config";
+import { isAdminEmail } from "@/lib/access";
+import { getLocalUserProfile, saveLocalUserProfile } from "@/lib/local-user-profile";
 
 interface AppUser {
     uid: string;
@@ -71,12 +73,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 displayName: user.displayName,
                 photoURL: user.photoURL,
                 role: "user",
+                organizerStatus: "none",
                 userType: "public",
+            };
+
+            const applyProfileDefaults = (input: UserProfile): UserProfile => {
+                const merged: UserProfile = {
+                    ...fallbackProfile,
+                    ...input,
+                    organizerStatus:
+                        input.organizerStatus ??
+                        (input.role === "organizer" ? "approved" : "none"),
+                };
+
+                if (isAdminEmail(user.email)) {
+                    merged.role = "admin";
+                    merged.organizerStatus = "approved";
+                }
+
+                return merged;
             };
 
             if (isPlaceholderFirebaseConfig()) {
                 if (!isCancelled) {
-                    setProfile((prev) => prev || fallbackProfile);
+                    const localProfile = getLocalUserProfile(user.uid);
+                    const resolved = applyProfileDefaults(localProfile || fallbackProfile);
+                    saveLocalUserProfile(resolved);
+                    setProfile(resolved);
                     setLoading(false);
                 }
                 return;
@@ -89,16 +112,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 if (isCancelled) return;
 
                 if (userDoc.exists()) {
-                    setProfile(userDoc.data() as UserProfile);
+                    const resolved = applyProfileDefaults(userDoc.data() as UserProfile);
+                    setProfile(resolved);
+                    await setDoc(userDocRef, resolved, { merge: true });
                 } else {
-                    await setDoc(userDocRef, fallbackProfile);
+                    const resolved = applyProfileDefaults(fallbackProfile);
+                    await setDoc(userDocRef, resolved);
                     if (!isCancelled) {
-                        setProfile(fallbackProfile);
+                        setProfile(resolved);
                     }
                 }
             } catch (error) {
                 if (!isCancelled) {
-                    setProfile((prev) => prev || fallbackProfile);
+                    const localProfile = getLocalUserProfile(user.uid);
+                    const resolved = applyProfileDefaults(localProfile || fallbackProfile);
+                    saveLocalUserProfile(resolved);
+                    setProfile(resolved);
                 }
             } finally {
                 if (!isCancelled) {
