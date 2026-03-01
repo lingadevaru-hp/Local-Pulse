@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { isOrganizerApproved } from '@/lib/access';
+import { isAdminEmail, isOrganizerApproved } from '@/lib/access';
 
 interface NavItem {
     href: string;
@@ -60,7 +60,7 @@ export default function AppHeader() {
     const { user, profile } = useAuth();
 
     const organizerApproved = isOrganizerApproved(profile);
-    const isAdmin = profile?.role === 'admin';
+    const isAdmin = (profile?.role === 'admin') || isAdminEmail(user?.email || profile?.email || null);
 
     const navItems = useMemo<NavItem[]>(() => {
         const items: NavItem[] = [

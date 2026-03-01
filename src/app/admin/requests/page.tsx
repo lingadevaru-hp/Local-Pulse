@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { SignInButton } from '@clerk/nextjs';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
@@ -9,21 +11,21 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Check, X, MapPin, Calendar, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 import { Event } from '@/types';
+import { isAdminEmail } from '@/lib/access';
 
 export default function AdminRequestsPage() {
     const { user, profile, loading: authLoading } = useAuth();
     const [requests, setRequests] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const router = useRouter();
+    const isAdmin = (profile?.role === 'admin') || isAdminEmail(user?.email || profile?.email || null);
 
     useEffect(() => {
-        if (!authLoading && (!user || profile?.role !== 'admin')) {
-            router.push('/');
+        if (!authLoading && (!user || !isAdmin)) {
+            setLoading(false);
         }
-    }, [user, profile, authLoading, router]);
+    }, [user, isAdmin, authLoading]);
 
     const fetchRequests = async () => {
         setLoading(true);
@@ -48,10 +50,10 @@ export default function AdminRequestsPage() {
     };
 
     useEffect(() => {
-        if (user && profile?.role === 'admin') {
+        if (user && isAdmin) {
             fetchRequests();
         }
-    }, [user, profile]);
+    }, [user, isAdmin]);
 
     const handleAction = async (eventId: string, action: 'approved' | 'rejected') => {
         try {
@@ -74,6 +76,47 @@ export default function AdminRequestsPage() {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <Card className="max-w-xl mx-auto text-center">
+                    <CardHeader>
+                        <CardTitle className="text-2xl">Admin Sign-In Required</CardTitle>
+                        <CardDescription>Sign in with your admin account to view event requests.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <SignInButton mode="modal">
+                            <Button>Sign In</Button>
+                        </SignInButton>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (!isAdmin) {
+        return (
+            <div className="container mx-auto px-4 py-8 max-w-2xl">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-2xl">Admin Access Denied</CardTitle>
+                        <CardDescription>
+                            Add your login email to <code>NEXT_PUBLIC_ADMIN_EMAILS</code> and redeploy.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            Signed in as: <span className="font-medium text-foreground">{user.email || 'Unknown email'}</span>
+                        </p>
+                        <Button className="mt-4" variant="outline" asChild>
+                            <Link href="/">Back to Home</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
             </div>
         );
     }

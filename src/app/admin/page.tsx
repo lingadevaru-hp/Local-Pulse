@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { SignInButton } from '@clerk/nextjs';
 import { collection, getDocs } from 'firebase/firestore';
 import { CheckCircle2, Clock3, Loader2, ShieldCheck, Users, XCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { isAdminEmail } from '@/lib/access';
 
 interface AdminStats {
   totalUsers: number;
@@ -37,7 +38,6 @@ interface OrganizerPerformance {
 
 export default function AdminDashboardPage() {
   const { user, profile, loading: authLoading } = useAuth();
-  const router = useRouter();
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ export default function AdminDashboardPage() {
   });
   const [performance, setPerformance] = useState<OrganizerPerformance[]>([]);
 
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = (profile?.role === 'admin') || isAdminEmail(user?.email || profile?.email || null);
 
   const loadDashboard = async () => {
     if (!user) return;
@@ -150,14 +150,10 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) {
-      router.push('/');
-      return;
-    }
     if (user && isAdmin) {
       loadDashboard();
     }
-  }, [authLoading, user, isAdmin, router]);
+  }, [user, isAdmin]);
 
   const pendingApps = useMemo(
     () => applications.filter((item) => item.status === 'pending'),
@@ -187,7 +183,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading || (user && isAdmin && loading)) {
     return (
       <div className="container mx-auto px-4 py-12 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -195,7 +191,49 @@ export default function AdminDashboardPage() {
     );
   }
 
-  if (!user || !isAdmin) return null;
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-10 max-w-xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Admin Sign-In Required</CardTitle>
+            <CardDescription>Sign in with your admin account to access the control panel.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SignInButton mode="modal">
+              <Button>Sign In</Button>
+            </SignInButton>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">Admin Access Denied</CardTitle>
+            <CardDescription>
+              This account is not in the admin allow-list.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Signed in as: <span className="font-medium text-foreground">{user.email || 'Unknown email'}</span>
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Add your email in Render env var: <code>NEXT_PUBLIC_ADMIN_EMAILS</code> (comma-separated), then redeploy.
+            </p>
+            <Button variant="outline" asChild>
+              <Link href="/">Back to Home</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
