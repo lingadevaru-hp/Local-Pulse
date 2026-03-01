@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 98%; /* Light grey/white */
+    --foreground: 240 10% 3.9%; /* Dark grey for text */
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 210 100% 50%; /* Apple Blue #007AFF */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --secondary: 210 20% 94%; /* Lighter grey for secondary elements */
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 210 20% 88%; /* Muted grey for less important text/borders */
+    --muted-foreground: 240 5% 45.1%;
+    --accent: 210 100% 50%; /* Apple Blue also for accents */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 20% 85%; /* Slightly darker border */
+    --input: 210 20% 90%; /* Input background */
+    --ring: 210 100% 50%; /* Apple Blue for focus rings */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.75rem; /* Base radius (12px) */
+
+    /* Glassmorphism specific properties - adjusted for subtler effect */
+    --glass-bg-light: hsla(0, 0%, 100%, 0.1); /* Subtler white for light mode glass */
+    --glass-border-light: hsla(0, 0%, 100%, 0.2);
+    --glass-bg-dark: hsla(220, 15%, 10%, 0.25); /* Subtler dark for dark mode glass */
+    --glass-border-dark: hsla(220, 15%, 25%, 0.15);
+  }
+
+  .dark {
+    --background: 220 15% 10%; /* Dark, slightly bluish grey */
+    --foreground: 0 0% 98%; /* Light text */
+    --card: 220 15% 15%; /* Darker cards */
+    --card-foreground: 0 0% 98%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 210 100% 50%; /* Apple Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 20%; /* Slightly lighter dark grey */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 15% 25%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 210 100% 50%; /* Apple Blue */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 15% 25%;
+    --input: 220 15% 25%;
+    --ring: 210 100% 50%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom utility for backdrop blur */
+.backdrop-blur-10 {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Glassmorphic card style utility */
+.glass-effect {
+    background-color: var(--glass-bg-light);
+    border: 1px solid var(--glass-border-light);
+    @apply backdrop-blur-md shadow-lg;
+}
+.dark .glass-effect {
+    background-color: var(--glass-bg-dark);
+    border: 1px solid var(--glass-border-dark);
+}
+
+/* Custom scrollbar styling (optional, for a more polished look) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Apply button animations */
+.apply-btn-pulse {
+  animation: pulse-once 0.5s ease-in-out;
+}
+
+@keyframes pulse-once {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); } /* Reduced scale for subtlety */
+  100% { transform: scale(1); }
+}

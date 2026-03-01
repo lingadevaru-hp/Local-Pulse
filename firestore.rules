@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function isOrganizer() {
+      return isSignedIn() && getUserData().role == 'organizer';
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && getUserData().role == 'admin';
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Event Requests (Organizer submits, Admin/Functions approve)
+    match /eventRequests/{requestId} {
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.organizerId || isAdmin());
+      allow create: if isOrganizer();
+      allow update: if isAdmin();
+      allow delete: if isAdmin() || (isOrganizer() && resource.data.organizerId == request.auth.uid && resource.data.status == 'pending');
+    }
+
+    // Events (Publicly readable if approved, or restricted by college/department)
+    match /events/{eventId} {
+      allow read: if true; // Basic read, logic for college/dept logic should be handled in query/app layer for best UX, but rules can enforce it
+      // In a strict mode, you'd do:
+      // allow read: if resource.data.type == 'local' || 
+      //              (resource.data.type == 'college' && getUserData().college == resource.data.college) ||
+      //              (resource.data.type == 'department' && getUserData().department == resource.data.department);
+      allow write: if isAdmin(); // only via functions or admin
+    }
+
+    // Registrations
+    match /registrations/{registrationId} {
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.userId || isOrganizer());
+      allow create: if isSignedIn();
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+  }
+}
