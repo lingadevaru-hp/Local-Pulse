@@ -1,6 +1,10 @@
 import type { UserProfile } from '@/types';
 
-const DEFAULT_ADMIN_EMAILS = ['contact@lingadevaru.in'];
+const DEFAULT_ADMIN_EMAILS = [
+  'contact@lingadevaru.in',
+  'akshaysarun30@gmail.com',
+  'hpthoshan@gmail.com',
+];
 
 export const getAdminEmails = () => {
   const raw = process.env.NEXT_PUBLIC_ADMIN_EMAILS;

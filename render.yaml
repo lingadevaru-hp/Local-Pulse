@@ -18,7 +18,7 @@ services:
       - key: CLERK_SECRET_KEY
         sync: false
       - key: NEXT_PUBLIC_ADMIN_EMAILS
-        value: contact@lingadevaru.in
+        value: contact@lingadevaru.in,akshaysarun30@gmail.com,hpthoshan@gmail.com
       - key: NEXT_PUBLIC_FIREBASE_API_KEY
         sync: false
       - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
