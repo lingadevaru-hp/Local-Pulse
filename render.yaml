@@ -14,7 +14,7 @@ services:
       - key: NEXT_TELEMETRY_DISABLED
         value: "1"
       - key: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-        value: pk_test_replace_with_real_clerk_publishable_key
+        sync: false
       - key: CLERK_SECRET_KEY
         sync: false
       - key: NEXT_PUBLIC_ADMIN_EMAILS
