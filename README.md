@@ -2,6 +2,21 @@
 
 Local Pulse is a Next.js App Router event platform with Clerk authentication, local-first data storage, and Progressive Web App support.
 
+## App Features
+
+- Authentication and account management with Clerk (sign in, sign up, profile, password reset).
+- Single account management surface via Clerk `UserProfile` (`/profile`).
+- Event discovery home with search, filters, and featured events.
+- Access-controlled visibility for local, college, and department events.
+- Save events to favorites from cards and event details.
+- Recently viewed events history on the home page.
+- Smart recommendations based on favorites and viewing behavior.
+- Event detail actions: registration, share, contact organizer, map embed, add-to-calendar (`.ics`).
+- Organizer tools to create events and manage organizer event listings.
+- Ticket history page with reminder toggles and digital ticket view.
+- Local Data Hub (`/database`) to inspect totals, export backup, import backup, and clear local data.
+- Progressive Web App install prompt, app manifest, service worker, and mobile-friendly icons.
+
 ## What Is Included
 
 - App Router architecture (`src/app`)
