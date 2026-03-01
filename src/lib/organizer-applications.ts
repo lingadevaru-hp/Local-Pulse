@@ -17,6 +17,7 @@ import { getLocalUserProfile, saveLocalUserProfile } from '@/lib/local-user-prof
 
 const LOCAL_ORGANIZER_APPLICATIONS_KEY = 'localpulse_organizer_applications_v1';
 export const LOCAL_ORGANIZER_APPLICATIONS_UPDATED_EVENT = 'localpulse:organizer-applications-updated';
+const MAX_LOCAL_DOCUMENT_DATA_URL_LENGTH = 120_000;
 
 export interface OrganizerApplicationInput {
   userId: string;
@@ -54,7 +55,22 @@ const readLocal = (): OrganizerApplication[] => {
 
 const writeLocal = (applications: OrganizerApplication[]) => {
   if (!isBrowser()) return;
-  window.localStorage.setItem(LOCAL_ORGANIZER_APPLICATIONS_KEY, JSON.stringify(applications));
+  const serialize = (items: OrganizerApplication[]) => JSON.stringify(items);
+  const stripDocumentData = (items: OrganizerApplication[]) =>
+    items.map((item) => ({ ...item, documentDataUrl: undefined }));
+
+  try {
+    window.localStorage.setItem(LOCAL_ORGANIZER_APPLICATIONS_KEY, serialize(applications));
+  } catch {
+    try {
+      const compact = stripDocumentData(applications);
+      window.localStorage.setItem(LOCAL_ORGANIZER_APPLICATIONS_KEY, serialize(compact));
+    } catch {
+      const minimal = stripDocumentData(applications).slice(0, 20);
+      window.localStorage.setItem(LOCAL_ORGANIZER_APPLICATIONS_KEY, serialize(minimal));
+    }
+  }
+
   emit();
 };
 
@@ -214,11 +230,25 @@ export const submitOrganizerApplication = async (
   };
 
   if (isPlaceholderFirebaseConfig()) {
+    const safeDocumentDataUrl =
+      payload.documentDataUrl && payload.documentDataUrl.length <= MAX_LOCAL_DOCUMENT_DATA_URL_LENGTH
+        ? payload.documentDataUrl
+        : undefined;
+
+    const localCopy: OrganizerApplication = {
+      ...base,
+      documentDataUrl: safeDocumentDataUrl,
+      notes:
+        !safeDocumentDataUrl && payload.documentDataUrl
+          ? `${payload.notes || ''}\n[Document preview omitted in local mode due storage limit.]`.trim()
+          : payload.notes,
+    };
+
     const existing = readLocal();
     const filtered = existing.filter((item) => item.userId !== payload.userId);
-    writeLocal([base, ...filtered]);
+    writeLocal([localCopy, ...filtered]);
     await applyUserRoleFromStatus(payload.userId, 'pending', submittedAt);
-    return base;
+    return localCopy;
   }
 
   let documentUrl: string | undefined;

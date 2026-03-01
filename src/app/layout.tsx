@@ -37,6 +37,10 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+const clerkPublishableKey =
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  'pk_test_replace_with_real_clerk_publishable_key';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -48,7 +52,7 @@ export default function RootLayout({
         <GoogleAnalytics />
       </head>
       <body className="font-sans antialiased bg-background text-foreground" suppressHydrationWarning>
-        <ClerkProvider>
+        <ClerkProvider publishableKey={clerkPublishableKey}>
           <AuthProvider>
             <ThemeProvider
               attribute="class"
