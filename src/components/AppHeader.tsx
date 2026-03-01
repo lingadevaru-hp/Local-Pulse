@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { ComponentType, SVGProps } from 'react';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Home, LayoutDashboard, Menu, PlusCircle, Ticket, UserCircle } from 'lucide-react';
+import { CalendarDays, Database, Home, LayoutDashboard, Menu, PlusCircle, Ticket } from 'lucide-react';
 import {
     SignedIn,
     SignedOut,
@@ -14,7 +14,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import ThemeToggle from './ThemeToggle';
 
 interface NavItem {
     href: string;
@@ -26,6 +25,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/#events', label: 'Events', icon: CalendarDays },
+    { href: '/database', label: 'Data Hub', icon: Database },
     { href: '/my-tickets', label: 'My Tickets', icon: Ticket, signedInOnly: true },
     { href: '/organizer', label: 'Organizer', icon: LayoutDashboard, signedInOnly: true },
 ];
@@ -104,8 +104,6 @@ export default function AppHeader() {
                         </SignUpButton>
                     </SignedOut>
 
-                    <ThemeToggle />
-
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon" className="md:hidden rounded-full" aria-label="Open menu">
@@ -123,12 +121,6 @@ export default function AppHeader() {
                                         <Link href="/events/create" className="rounded-full px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 flex items-center gap-2">
                                             <PlusCircle className="h-4 w-4" />
                                             Create Event
-                                        </Link>
-                                    </SheetClose>
-                                    <SheetClose asChild>
-                                        <Link href="/profile" className="rounded-full px-4 py-3 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 flex items-center gap-2">
-                                            <UserCircle className="h-4 w-4" />
-                                            Manage Account
                                         </Link>
                                     </SheetClose>
                                 </SignedIn>

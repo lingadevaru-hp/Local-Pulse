@@ -1,4 +1,4 @@
-import { Event } from '@/types';
+import type { Event } from '@/types';
 
 export const MOCK_EVENTS: Event[] = [
     {
@@ -10,6 +10,7 @@ export const MOCK_EVENTS: Event[] = [
         date: '2026-04-18',
         time: '10:30',
         location: 'Koramangala Community Hall',
+        locationAddress: '7th Block, Koramangala, Bengaluru',
         category: 'Technology',
         imageUrl: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2000&auto=format&fit=crop',
         rating: 4.8,
@@ -17,6 +18,7 @@ export const MOCK_EVENTS: Event[] = [
         type: 'local',
         status: 'approved',
         organizerName: 'Local Pulse Team',
+        duration: '3',
         coordinates: { latitude: 12.9352, longitude: 77.6245 }
     },
     {
@@ -28,6 +30,7 @@ export const MOCK_EVENTS: Event[] = [
         date: '2026-05-10',
         time: '06:30',
         location: 'Kukkarahalli Lake Park',
+        locationAddress: 'Vinayakanagara, Mysuru',
         category: 'Wellness',
         imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1840&auto=format&fit=crop',
         rating: 4.6,
@@ -35,6 +38,7 @@ export const MOCK_EVENTS: Event[] = [
         type: 'local',
         status: 'approved',
         organizerName: 'Mysuru Wellness Circle',
+        duration: '2',
         coordinates: { latitude: 12.3222, longitude: 76.6247 }
     },
     {
@@ -46,6 +50,7 @@ export const MOCK_EVENTS: Event[] = [
         date: '2026-06-07',
         time: '17:00',
         location: 'Kadri Grounds',
+        locationAddress: 'Kadri, Mangaluru',
         category: 'Food',
         imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=2000&auto=format&fit=crop',
         rating: 4.7,
@@ -53,7 +58,148 @@ export const MOCK_EVENTS: Event[] = [
         type: 'local',
         status: 'approved',
         organizerName: 'Coastal Events Collective',
+        duration: '4',
         coordinates: { latitude: 12.8947, longitude: 74.8560 }
+    },
+    {
+        id: 'local-4',
+        name: 'Open-Air Cinema Night',
+        description:
+            'Classic cinema screening under the stars with local food trucks and indie music before the show.',
+        city: 'Bengaluru',
+        date: '2026-04-26',
+        time: '19:15',
+        location: 'Cubbon Park Amphitheatre',
+        locationAddress: 'Cubbon Park, Bengaluru',
+        category: 'Cultural',
+        imageUrl: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2000&auto=format&fit=crop',
+        rating: 4.5,
+        price: 'INR 249',
+        type: 'local',
+        status: 'approved',
+        organizerName: 'City Arts Forum',
+        duration: '3',
+        coordinates: { latitude: 12.9765, longitude: 77.5993 }
+    },
+    {
+        id: 'local-5',
+        name: 'Weekend Cycling Club Ride',
+        description:
+            'Group cycling session for beginners and pros. Route support, hydration pit stops, and safety marshals included.',
+        city: 'Pune',
+        date: '2026-05-23',
+        time: '05:45',
+        location: 'Aundh Sports Complex',
+        locationAddress: 'Aundh, Pune',
+        category: 'Sports',
+        imageUrl: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=2000&auto=format&fit=crop',
+        rating: 4.4,
+        price: 'INR 99',
+        type: 'local',
+        status: 'approved',
+        organizerName: 'Pedal Pulse',
+        duration: '3',
+        coordinates: { latitude: 18.5608, longitude: 73.8070 }
+    },
+    {
+        id: 'local-6',
+        name: 'Indie Band Night',
+        description:
+            'A curated lineup of independent bands performing original Kannada and multilingual sets.',
+        city: 'Chennai',
+        date: '2026-06-20',
+        time: '18:45',
+        location: 'Bayfront Arena',
+        locationAddress: 'Foreshore Estate, Chennai',
+        category: 'Music',
+        imageUrl: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2000&auto=format&fit=crop',
+        rating: 4.7,
+        price: 'INR 499',
+        type: 'local',
+        status: 'approved',
+        organizerName: 'StageWave',
+        duration: '4',
+        coordinates: { latitude: 13.0215, longitude: 80.2794 }
+    },
+    {
+        id: 'local-7',
+        name: 'City Photography Walk',
+        description:
+            'Golden-hour guided walk to shoot architecture, street stories, and urban portraits. Bring any camera.',
+        city: 'Hyderabad',
+        date: '2026-04-12',
+        time: '16:30',
+        location: 'Tank Bund Promenade',
+        locationAddress: 'Hussain Sagar, Hyderabad',
+        category: 'Art',
+        imageUrl: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2000&auto=format&fit=crop',
+        rating: 4.3,
+        price: 'Free',
+        type: 'local',
+        status: 'approved',
+        organizerName: 'Frame Street Club',
+        duration: '2',
+        coordinates: { latitude: 17.4239, longitude: 78.4738 }
+    },
+    {
+        id: 'local-8',
+        name: 'Startup Pitch And Demo Day',
+        description:
+            'Early-stage founders pitch to mentors and angel investors. Includes product demo pods and AMA sessions.',
+        city: 'Mumbai',
+        date: '2026-07-11',
+        time: '11:00',
+        location: 'BKC Innovation Center',
+        locationAddress: 'Bandra Kurla Complex, Mumbai',
+        category: 'Technology',
+        imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2000&auto=format&fit=crop',
+        rating: 4.9,
+        price: 'INR 799',
+        type: 'local',
+        status: 'approved',
+        organizerName: 'LaunchLoop India',
+        duration: '5',
+        coordinates: { latitude: 19.0700, longitude: 72.8681 }
+    },
+    {
+        id: 'local-9',
+        name: 'Monsoon Marathon 10K',
+        description:
+            'Community run featuring 3K fun run, 5K timed run, and 10K challenge with medal and hydration support.',
+        city: 'Delhi',
+        date: '2026-08-02',
+        time: '06:00',
+        location: 'Nehru Park',
+        locationAddress: 'Chanakyapuri, New Delhi',
+        category: 'Sports',
+        imageUrl: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?q=80&w=2000&auto=format&fit=crop',
+        rating: 4.5,
+        price: 'INR 399',
+        type: 'local',
+        status: 'approved',
+        organizerName: 'Run Delhi Collective',
+        duration: '4',
+        coordinates: { latitude: 28.5993, longitude: 77.1886 }
+    },
+    {
+        id: 'local-10',
+        name: 'Heritage Walk And Storytelling',
+        description:
+            'Guided heritage walk exploring historic landmarks with local historians and interactive storytelling stops.',
+        city: 'Kolkata',
+        date: '2026-07-26',
+        time: '07:30',
+        location: 'College Street Square',
+        locationAddress: 'College Street, Kolkata',
+        category: 'Cultural',
+        imageUrl: 'https://images.unsplash.com/photo-1524492449090-1e8f5f44df56?q=80&w=2000&auto=format&fit=crop',
+        rating: 4.6,
+        price: 'INR 120',
+        type: 'local',
+        status: 'approved',
+        organizerName: 'City Stories Kolkata',
+        duration: '3',
+        coordinates: { latitude: 22.5764, longitude: 88.3639 }
     },
     {
         id: 'college-1',
@@ -64,6 +210,7 @@ export const MOCK_EVENTS: Event[] = [
         date: '2026-08-22',
         time: '09:00',
         location: 'RV College of Engineering',
+        locationAddress: 'Mysore Road, Bengaluru',
         category: 'Technology',
         imageUrl: 'https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=2000&auto=format&fit=crop',
         rating: 4.9,
@@ -72,6 +219,7 @@ export const MOCK_EVENTS: Event[] = [
         college: 'RV College of Engineering',
         status: 'approved',
         organizerName: 'RVCE Student Council',
+        duration: '6',
         coordinates: { latitude: 12.9234, longitude: 77.4987 }
     },
     {
@@ -83,6 +231,7 @@ export const MOCK_EVENTS: Event[] = [
         date: '2026-09-05',
         time: '14:00',
         location: 'CS Department Lab 4',
+        locationAddress: 'RV College Campus, Bengaluru',
         category: 'Art',
         imageUrl: 'https://images.unsplash.com/photo-1558655146-364adaf1fcc9?q=80&w=2000&auto=format&fit=crop',
         rating: 4.4,
@@ -92,6 +241,7 @@ export const MOCK_EVENTS: Event[] = [
         department: 'Computer Science',
         status: 'approved',
         organizerName: 'Design Club RVCE',
+        duration: '5',
         coordinates: { latitude: 12.9226, longitude: 77.4969 }
     }
 ];

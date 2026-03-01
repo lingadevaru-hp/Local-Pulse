@@ -10,10 +10,11 @@ import { ArrowLeft, PlusCircle, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { getLocalEvents, LOCAL_EVENTS_UPDATED_EVENT } from '@/lib/local-db';
+import type { Event } from '@/types';
 
 export default function MyEventsPage() {
     const { user, loading: authLoading } = useAuth();
-    const [activeEvents, setActiveEvents] = useState<any[]>([]);
+    const [activeEvents, setActiveEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

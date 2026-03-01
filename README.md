@@ -1,13 +1,81 @@
 # Local Pulse
 
-Local Pulse is a Next.js App Router event platform with:
+Local Pulse is a Next.js App Router event platform with Clerk authentication, local-first data storage, and Progressive Web App support.
 
-- Clerk authentication and profile management
-- Local database persistence for user-created events and registrations
-- Progressive Web App support (service worker + install prompt)
-- Zero required paid backend to run locally or deploy
+## What Is Included
 
-## Quick Start
+- App Router architecture (`src/app`)
+- Clerk authentication + account management
+- Local database layer in browser storage
+- Event discovery UI with filters and recommendations
+- Organizer flow for creating local events
+- PWA install support and offline service worker registration
+
+## New Feature Set Added
+
+This version includes 5 major feature upgrades:
+
+1. Saved Events (Favorites)
+- Heart/save events from cards and event details.
+- Favorites are persisted locally and reflected instantly across pages.
+
+2. Recently Viewed Events
+- Event detail views are tracked in local storage.
+- Home page now has a "Recently Viewed" section.
+
+3. Smart Recommendations
+- Home page recommends events based on saved and recently viewed behavior.
+- Uses local affinity scoring (category + city + rating bias).
+
+4. Add To Calendar (`.ics`)
+- Event details page includes one-click calendar export.
+- Works with Google Calendar, Outlook, Apple Calendar, and other calendar apps.
+
+5. Data Hub (Local Database Tools)
+- New `/database` page to inspect local data counts.
+- Export full local backup as JSON.
+- Import backup JSON on another browser/device.
+- Clear all local app data when needed.
+
+## UI and Navigation Improvements
+
+- Simplified account management with Clerk `UserButton` as the primary profile entry.
+- Reduced profile/menu duplication.
+- Added Data Hub to top navigation.
+- Added richer home hero and stats strip.
+- Expanded event catalog with more seeded events across categories/cities.
+
+## Tech Stack
+
+- Next.js 15 (App Router)
+- React 18
+- TypeScript
+- Tailwind CSS + shadcn/ui components
+- Clerk (`@clerk/nextjs`)
+- Firebase (existing integration kept)
+- Local browser storage as zero-cost local database
+
+## Clerk Integration (App Router, Current Pattern)
+
+The project follows the current Clerk App Router setup:
+
+- SDK install: `@clerk/nextjs`
+- Middleware: `src/proxy.ts` with `clerkMiddleware()`
+- Provider: `<ClerkProvider>` in `src/app/layout.tsx`
+- Auth UI components from `@clerk/nextjs` in app components
+
+## Environment Variables
+
+Create `.env.local`:
+
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
+CLERK_SECRET_KEY=YOUR_SECRET_KEY
+```
+
+Do not commit real keys. `.env*` is already ignored by `.gitignore`.
+
+## Local Development
 
 1. Install dependencies:
 
@@ -15,49 +83,80 @@ Local Pulse is a Next.js App Router event platform with:
 npm install
 ```
 
-2. Add Clerk keys in `.env.local`:
-
-```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
-CLERK_SECRET_KEY=YOUR_SECRET_KEY
-```
-
-3. Run:
+2. Run the dev server:
 
 ```bash
 npm run dev
 ```
 
-4. Open:
+3. Open:
 
 `http://localhost:9002`
 
-## Data Model
+## Data Model (Local Database)
 
-- Default events are bundled in `src/lib/mockData.ts`.
-- Newly created events are saved in browser local storage (`localpulse_events_v1`).
-- Registrations/tickets are saved in browser local storage (`localpulse_registrations_v1`).
+The browser local database is managed by `src/lib/local-db.ts`.
 
-This makes hosting easy on free tiers (Vercel/Netlify) without provisioning a database.
+Primary keys used:
 
-## Deploy (Free)
+- `localpulse_events_v1`
+- `localpulse_registrations_v1`
+- `localpulse_favorite_event_ids_v1`
+- `localpulse_recently_viewed_v1`
+
+Capabilities:
+
+- Create/update local events
+- Save registrations/tickets
+- Save favorites
+- Track recently viewed events
+- Export/import full snapshot
+- Clear database safely
+
+## Main Routes
+
+- `/` - Home discovery page
+- `/events/[id]` - Event detail + register + share + calendar export
+- `/events/create` - Organizer event creation
+- `/my-tickets` - User ticket history
+- `/profile` - Clerk account settings (`UserProfile`)
+- `/organizer` - Organizer dashboard
+- `/database` - Local database tools
+
+## Progressive Web App
+
+- Manifest: `public/manifest.json`
+- Service worker: `public/sw.js`
+- Install prompt UI: `src/components/PwaInstallPrompt.tsx`
+- Icons: `public/icons/`
+- App icon files: `src/app/icon.png`, `src/app/apple-icon.png`
+
+## Free Deployment
 
 ### Vercel
 
-1. Import the GitHub repo into Vercel.
-2. Set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` in Project Environment Variables.
+1. Import repository in Vercel.
+2. Add environment variables:
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `CLERK_SECRET_KEY`
 3. Deploy.
 
 ### Netlify
 
-1. Import the GitHub repo into Netlify.
-2. Netlify will auto-detect Next.js and use the Next runtime.
-3. Set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`.
+1. Import repository in Netlify.
+2. Use default Next.js build settings.
+3. Add the same Clerk environment variables.
 4. Deploy.
 
-## PWA
+## Quality Commands
 
-- Manifest: `public/manifest.json`
-- Service worker: `public/sw.js`
-- Install prompt component: `src/components/PwaInstallPrompt.tsx`
-- Icons: `public/icons/`
+```bash
+npm run typecheck
+npm run build
+```
+
+## Repository Owner Profile (Suggested)
+
+For your GitHub profile/repo description, this summary works well:
+
+`Local Pulse: a local-first event discovery and organizer platform with Clerk auth, PWA install support, smart recommendations, and portable browser database backups.`

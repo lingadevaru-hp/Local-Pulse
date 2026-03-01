@@ -7,6 +7,7 @@ import { CalendarDays, MapPin, Tag, UserCircle, Star as StarIcon } from 'lucide-
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import ShareButton from '@/components/ShareButton';
+import FavoriteToggleButton from '@/components/FavoriteToggleButton';
 
 interface EventCardProps {
   event: Event;
@@ -50,6 +51,10 @@ const EventCard: FC<EventCardProps> = ({ event, onClick }) => {
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           data-ai-hint={aiHint}
+        />
+        <FavoriteToggleButton
+          eventId={event.id}
+          className="absolute right-3 top-3 h-9 w-9 bg-background/80 backdrop-blur border-border/60 hover:bg-background"
         />
       </div>
       <div className="p-4 space-y-2 flex-grow">

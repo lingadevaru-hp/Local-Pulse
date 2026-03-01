@@ -5,6 +5,7 @@ import type { NextPage } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Database } from 'lucide-react';
 
 const OrganizerDashboardPage: NextPage = () => {
   return (
@@ -38,6 +39,20 @@ const OrganizerDashboardPage: NextPage = () => {
                 <p className="text-sm text-muted-foreground">Start by creating a new event. It appears instantly without backend setup.</p>
                 <Button className="mt-4" asChild>
                   <Link href="/events/create">Create Event</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="glass-effect">
+              <CardHeader>
+                <CardTitle>Database Tools</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Export/import local data and inspect the browser database state.</p>
+                <Button className="mt-4" variant="outline" asChild>
+                  <Link href="/database">
+                    <Database className="h-4 w-4 mr-2" />
+                    Open Data Hub
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

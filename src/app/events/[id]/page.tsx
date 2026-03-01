@@ -1,25 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, MapPin, UserCircle, Tag, ArrowLeft, Star, Bell, CheckCircle2, Loader2, Lock } from 'lucide-react';
+import { CalendarDays, MapPin, UserCircle, Tag, ArrowLeft, Bell, CheckCircle2, Loader2, Lock, CalendarPlus } from 'lucide-react';
 import Link from 'next/link';
 import AppFooter from '@/components/AppFooter';
 import RegistrationDialog from '@/components/RegistrationDialog';
 import ShareButton from '@/components/ShareButton';
+import FavoriteToggleButton from '@/components/FavoriteToggleButton';
 import type { Event } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { MOCK_EVENTS } from '@/lib/mockData';
-import { getLocalEventById, getLocalRegistrations } from '@/lib/local-db';
+import { getLocalEventById, getLocalRegistrations, trackRecentlyViewedEvent } from '@/lib/local-db';
+import { downloadEventCalendar } from '@/lib/calendar';
 
 export default function EventPage() {
     const params = useParams();
-    const router = useRouter();
     const id = params?.id as string;
     const { user, profile, loading: authLoading } = useAuth();
     const { toast } = useToast();
@@ -113,6 +114,11 @@ export default function EventPage() {
             checkRegistration();
         }
     }, [user, id, registrationDialogOpen]);
+
+    useEffect(() => {
+        if (!event?.id) return;
+        trackRecentlyViewedEvent(event.id);
+    }, [event?.id]);
 
     const handleSetNotification = () => {
         toast({
@@ -243,7 +249,19 @@ export default function EventPage() {
                                         Register Now
                                     </Button>
                                 )}
-                                <ShareButton event={event} variant="outline" size="default" className="w-full rounded-xl" />
+                                <div className="grid grid-cols-2 gap-2">
+                                    <FavoriteToggleButton eventId={event.id} showLabel className="w-full rounded-xl" />
+                                    <ShareButton event={event} variant="outline" size="default" className="w-full rounded-xl" />
+                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="w-full rounded-xl"
+                                    onClick={() => downloadEventCalendar(event)}
+                                >
+                                    <CalendarPlus className="w-4 h-4 mr-2" />
+                                    Add To Calendar
+                                </Button>
                             </div>
                         </div>
 
